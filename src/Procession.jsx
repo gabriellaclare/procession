@@ -1,3 +1,4 @@
+
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent } from './components/ui/card'
@@ -30,7 +31,6 @@ export default function Procession() {
     setStep(prev => Math.min(prev + 1, 3))
   }
 
-  // --- OFFERING (IMAGE UPLOAD) ---
   const handleOffering = (e) => {
     const file = e.target.files[0]
     if (!file) return
@@ -46,7 +46,6 @@ export default function Procession() {
     }, 1500)
   }
 
-  // --- GESTURE (WEBCAM SNAPSHOT) ---
   const handleGesture = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true })
@@ -72,7 +71,7 @@ export default function Procession() {
         }, 1500)
       }, 600)
     } catch {
-      // permission denied — gesture not accepted
+      // permission denied
     }
   }
 
@@ -149,28 +148,28 @@ export default function Procession() {
         </CardContent>
       </Card>
 
-      {/* Ghost image layer */}
       <AnimatePresence>
         {ghost && (
           <motion.img
             src={ghost}
-            alt=""
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.4 }}
+            animate={{ opacity: 0.35 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.5 }}
             style={{
-              position: 'absolute',
-              maxWidth: '60%',
-              maxHeight: '60%',
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              maxWidth: '80vw',
+              maxHeight: '80vh',
               pointerEvents: 'none',
-              filter: 'blur(1px)',
+              filter: 'grayscale(100%) blur(1px)',
             }}
           />
         )}
       </AnimatePresence>
 
-      {/* Hidden capture elements */}
       <video ref={videoRef} style={{ display: 'none' }} />
       <canvas ref={canvasRef} style={{ display: 'none' }} />
 

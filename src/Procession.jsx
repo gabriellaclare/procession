@@ -11,6 +11,12 @@ const communalTraces = [
   { type: 'offering' },
 ]
 
+{step === 0 && (
+  <Button onClick={advance}>
+    Continue
+  </Button>
+)}
+
 export default function Procession() {
   const [step, setStep] = useState(-1)
   const [entries, setEntries] = useState([])

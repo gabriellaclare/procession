@@ -11,10 +11,19 @@ const communalTraces = [
   { type: 'offering' },
 ]
 
+const blessings = [
+  'You leave carrying what cannot be shown.',
+  'What was given does not return with you.',
+  'You have joined what continues.',
+  'Go, and keep what remains unseen.',
+  'The trace passes beyond you.'
+]
+
 export default function Procession() {
   const [step, setStep] = useState(-1)
   const [entries, setEntries] = useState([])
   const [ghost, setGhost] = useState(null)
+  const [fadeOut, setFadeOut] = useState(false)
 
   const fileInputRef = useRef(null)
   const videoRef = useRef(null)
@@ -24,7 +33,7 @@ export default function Procession() {
     'You are entering. Others are already here.',
     'Make an offering.',
     'Perform a gesture.',
-    'Remain with what has been left.'
+    ''
   ]
 
   const advance = () => {
@@ -52,6 +61,7 @@ export default function Procession() {
       videoRef.current.srcObject = stream
       videoRef.current.play()
 
+      // time for the gesture
       setTimeout(() => {
         const canvas = canvasRef.current
         const video = videoRef.current
@@ -69,13 +79,13 @@ export default function Procession() {
           setGhost(null)
           advance()
         }, 1500)
-      }, 600)
+      }, 6000)
     } catch (e) {
       // permission denied
     }
   }
 
-  const archive = [...communalTraces, ...entries].sort(() => Math.random() - 0.5)
+  const blessing = blessings[Math.floor(Math.random() * blessings.length)]
 
   return (
     <div style={{
@@ -87,70 +97,88 @@ export default function Procession() {
       justifyContent: 'center',
       position: 'relative'
     }}>
-      <Card>
-        <CardContent>
+      <AnimatePresence>
+        {!fadeOut && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 2 }}
+            style={{ width: '100%' }}
+          >
+            <Card>
+              <CardContent>
 
-          {step === -1 && (
-            <>
-              <p>Before you, there were others.</p>
-              {communalTraces.map((t, i) => (
-                <div key={i}>• {t.type}</div>
-              ))}
-              <Button onClick={advance}>Enter</Button>
-            </>
-          )}
+                {step === -1 && (
+                  <>
+                    <p>Before you, there were others.</p>
+                    {communalTraces.map((t, i) => (
+                      <div key={i}>• {t.type}</div>
+                    ))}
+                    <Button onClick={advance}>Enter</Button>
+                  </>
+                )}
 
-          {step >= 0 && (
-            <>
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={step}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 1.2 }}
-                >
-                  {prompts[step]}
-                </motion.p>
-              </AnimatePresence>
+                {step >= 0 && step < 3 && (
+                  <>
+                    <AnimatePresence mode="wait">
+                      <motion.p
+                        key={step}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 1.2 }}
+                      >
+                        {prompts[step]}
+                      </motion.p>
+                    </AnimatePresence>
 
-              {step === 0 && (
-                <Button onClick={advance}>Continue</Button>
-              )}
+                    {step === 0 && (
+                      <Button onClick={advance}>Continue</Button>
+                    )}
 
-              {step === 1 && (
-                <>
-                  <Button onClick={() => fileInputRef.current.click()}>
-                    <Upload size={14} /> Offering
-                  </Button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    style={{ display: 'none' }}
-                    onChange={handleOffering}
-                  />
-                </>
-              )}
+                    {step === 1 && (
+                      <>
+                        <Button onClick={() => fileInputRef.current.click()}>
+                          <Upload size={14} /> Offering
+                        </Button>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          style={{ display: 'none' }}
+                          onChange={handleOffering}
+                        />
+                      </>
+                    )}
 
-              {step === 2 && (
-                <Button onClick={handleGesture}>
-                  <Footprints size={14} /> Gesture
-                </Button>
-              )}
+                    {step === 2 && (
+                      <>
+                        <p style={{ opacity: 0.6, fontSize: '0.9em' }}>
+                          The camera remains open. Perform the gesture.
+                        </p>
+                        <Button onClick={handleGesture}>
+                          <Footprints size={14} /> Gesture
+                        </Button>
+                      </>
+                    )}
+                  </>
+                )}
 
-              {step === 3 && (
-                <>
-                  {archive.map((e, i) => (
-                    <div key={i}>• {e.type}</div>
-                  ))}
-                </>
-              )}
-            </>
-          )}
+                {step === 3 && (
+                  <p style={{
+                    opacity: 0.75,
+                    textAlign: 'center',
+                    lineHeight: '1.6em'
+                  }}>
+                    {blessing}
+                  </p>
+                )}
 
-        </CardContent>
-      </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {ghost && (
@@ -173,6 +201,10 @@ export default function Procession() {
           />
         )}
       </AnimatePresence>
+
+      {step === 3 && !fadeOut && (
+        setTimeout(() => setFadeOut(true), 3000) || null
+      )}
 
       <video ref={videoRef} style={{ display: 'none' }} />
       <canvas ref={canvasRef} style={{ display: 'none' }} />

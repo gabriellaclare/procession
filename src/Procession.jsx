@@ -24,7 +24,7 @@ export default function Procession() {
     'You are entering. Others are already here.',
     'Make an offering.',
     'Perform a gesture.',
-    'Remain with what has been left.',
+    'Remain with what has been left.'
   ]
 
   const advance = () => {
@@ -37,7 +37,7 @@ export default function Procession() {
 
     const url = URL.createObjectURL(file)
     setGhost(url)
-    setEntries([...entries, { id: Date.now(), type: 'offering' }])
+    setEntries(prev => [...prev, { id: Date.now(), type: 'offering' }])
 
     setTimeout(() => {
       URL.revokeObjectURL(url)
@@ -61,7 +61,7 @@ export default function Procession() {
 
         const dataUrl = canvas.toDataURL('image/jpeg')
         setGhost(dataUrl)
-        setEntries([...entries, { id: Date.now(), type: 'gesture' }])
+        setEntries(prev => [...prev, { id: Date.now(), type: 'gesture' }])
 
         stream.getTracks().forEach(track => track.stop())
 
@@ -70,7 +70,7 @@ export default function Procession() {
           advance()
         }, 1500)
       }, 600)
-    } catch {
+    } catch (e) {
       // permission denied
     }
   }
@@ -85,7 +85,7 @@ export default function Procession() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      position: 'relative',
+      position: 'relative'
     }}>
       <Card>
         <CardContent>
@@ -113,11 +113,11 @@ export default function Procession() {
                   {prompts[step]}
                 </motion.p>
               </AnimatePresence>
-{step === 0 && (
-  <Button onClick={advance}>
-    Continue
-  </Button>
-)}
+
+              {step === 0 && (
+                <Button onClick={advance}>Continue</Button>
+              )}
+
               {step === 1 && (
                 <>
                   <Button onClick={() => fileInputRef.current.click()}>
@@ -168,7 +168,7 @@ export default function Procession() {
               maxWidth: '80vw',
               maxHeight: '80vh',
               pointerEvents: 'none',
-              filter: 'grayscale(100%) blur(1px)',
+              filter: 'grayscale(100%) blur(1px)'
             }}
           />
         )}
@@ -176,7 +176,6 @@ export default function Procession() {
 
       <video ref={videoRef} style={{ display: 'none' }} />
       <canvas ref={canvasRef} style={{ display: 'none' }} />
-
     </div>
   )
 }

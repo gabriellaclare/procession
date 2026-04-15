@@ -11,12 +11,6 @@ const communalTraces = [
   { type: 'offering' },
 ]
 
-{step === 0 && (
-  <Button onClick={advance}>
-    Continue
-  </Button>
-)}
-
 export default function Procession() {
   const [step, setStep] = useState(-1)
   const [entries, setEntries] = useState([])
@@ -119,7 +113,11 @@ export default function Procession() {
                   {prompts[step]}
                 </motion.p>
               </AnimatePresence>
-
+{step === 0 && (
+  <Button onClick={advance}>
+    Continue
+  </Button>
+)}
               {step === 1 && (
                 <>
                   <Button onClick={() => fileInputRef.current.click()}>
